@@ -14,10 +14,14 @@ class HomeController extends Controller
     }
 
     public function filtered($filter = 'art') {
-        if(!in_array($filter, ['art', 'music', 'sport'])) {
+        if(!in_array($filter, ['art', 'music', 'sport', 'F', 'M'])) {
             $locale = '/';
         }
-        $users = User::where('hobby', $filter)->get();
+        if(in_array($filter, ['art', 'music', 'sport'])) {
+            $users = User::where('hobby', $filter)->get();
+        } else {
+            $users = User::where('gender', $filter)->get();
+        }
         return view('home', compact('users'));
     }
 
@@ -25,19 +29,28 @@ class HomeController extends Controller
         $user_1 = User::find(auth()->user()->id);
         $user_2 = User::find($request->id);
 
-        $matched = Communicate::where('user_1', $user_2)->where('user_2', $user_1)->get();
+        // $matched = Communicate::where('user_1', $user_2)->where('user_2', $user_1)->get();
 
-        if($matched) {
-            $matched->relation = 1;
-            $matched->save();
-        } else {
-            $communicate = [
-                'user_1' => $user_1->id,
-                'user_2' => $user_2->id,
-                'relation' => 0
-            ];
-            Communicate::create($communicate);
-        }
+        // dd($matched);
+
+        $communicate = [
+            'user_1' => $user_1->id,
+            'user_2' => $user_2->id,
+            'relation' => 0
+        ];
+        Communicate::create($communicate);
+
+        // if(!$matched) {
+        //     $communicate = [
+        //         'user_1' => $user_1->id,
+        //         'user_2' => $user_2->id,
+        //         'relation' => 0
+        //     ];
+        //     Communicate::create($communicate);
+        // } else {
+        //     $matched->relation = 1;
+        //     Communicate::find($matched->id)->update($matched);
+        // }
 
         return redirect('/wishlist');
     }

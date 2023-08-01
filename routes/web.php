@@ -5,6 +5,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\WishlistController;
+use App\Http\Controllers\FriendListController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,16 +23,21 @@ Route::redirect('/', '/register');
 Route::get('/register', [RegisterController::class, 'index']);
 Route::post('/register', [RegisterController::class, 'create']);
 
-Route::get('/home', [HomeController::class, 'index']);
-Route::get('/home/{filter}', [HomeController::class, 'filtered']);
-Route::post('/addwishlist', [HomeController::class, 'create']);
-
-Route::get('/wishlist', [WishlistController::class, 'index']);
-
 Route::get('/login', [LoginController::class, 'index']);
 Route::post('/login', [LoginController::class, 'login']);
 
-Route::get('/logout', [LoginController::class, 'logout']);
+Route::group(['middleware' => 'auth'],function() {
+    Route::get('/home', [HomeController::class, 'index']);
+    Route::get('/home/{filter}', [HomeController::class, 'filtered']);
+    Route::post('/addwishlist', [HomeController::class, 'create']);
+
+    Route::get('/wishlist', [WishlistController::class, 'index']);
+
+    Route::get('/friendlist', [FriendListController::class, 'index']);
+
+    Route::get('/logout', [LoginController::class, 'logout']);
+});
+
 
 
 
